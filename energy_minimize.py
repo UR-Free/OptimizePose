@@ -87,7 +87,7 @@ if __name__ == '__main__':
                 failed_files = [files[i] for i in indices[0]]
                 logger.info(f'openff 优化未完成的样本数: {len(failed_files)}')
                 with Parallel(n_jobs=args.num_process) as parallel:
-                    new_data_list = parallel(delayed(UpdatePose)(lig_path,system_generator_gaff,modeller,protein_atoms,args.out_dir) for lig_path in failed_sdfs)
+                    new_data_list = parallel(delayed(UpdatePose)(lig_path,system_generator_gaff,modeller,protein_atoms,args.out_dir) for lig_path in failed_files)
         
         # 如果仍有失败的样本，保存未优化的构象
         if sum(new_data_list) != 0:
