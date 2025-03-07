@@ -68,9 +68,7 @@ if __name__ == '__main__':
         modeller.delete(disulfide_bond_list)
         forcefield = ForceField('amber14/protein.ff14SB.xml')
         modeller.addHydrogens(forcefield)
-        if modeller is None:
-            logger.error(f"为蛋白质创建系统失败，请检查蛋白质文件")
-            sys.exit(1)
+        protein_atoms = list(modeller.topology.atoms())
         
         # 处理配体文件
         logger.info(f"将处理化合物文件: {compound_path}")
@@ -79,7 +77,6 @@ if __name__ == '__main__':
         
         logger.info(f"将对文件中的{len(files)}个化合物进行能量最小化")
         
-        protein_atoms = list(modeller.topology.atoms())
         
         with Parallel(n_jobs=args.num_process,) as parallel:
             new_data_list = parallel(delayed(UpdatePose)(lig_path,system_generator,modeller,protein_atoms,args.out_dir) for lig_path in files)
