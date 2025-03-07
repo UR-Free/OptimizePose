@@ -1,19 +1,23 @@
-import os
+import os, sys
+import warnings
+
 from openff.toolkit import Molecule
 from openmmforcefields.generators import SystemGenerator
-from openmm import unit, LangevinIntegrator
-from openmm.app import PDBFile, Simulation
 from pdbfixer import PDBFixer
+
+from openmm import LangevinIntegrator
+from openmm import unit, Platform, State
+from openmm.app import PDBFile, Simulation
+
 import traceback
 from rdkit import Chem
 from rdkit.Chem import AllChem
-import numpy as np
-from rdkit import Chem
-import warnings
-from openmm import unit, Platform, State
+from rdkit.Chem.rdchem import Point3D
+
 from joblib import wrap_non_picklable_objects
 from joblib import delayed
-import re, sys
+
+import numpy as np
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -176,19 +180,6 @@ def GetfixedPDB(receptor_path):
         logger.info('There have a precessed pdb file use it!')
     return fixer
 
-import copy
-from rdkit.Geometry import Point3D
-def GetDockingPose(graph):
-    mol = copy.deepcopy(graph.mol[0] if type(graph.mol) == list else graph.mol)
-    mol = Chem.RemoveHs(mol)
-    docking_position = graph['ligand'].pos.detach().cpu().numpy() # without Hs and dont match with raw pocket
-    docking_position = docking_position + graph.original_center.detach().cpu().numpy()
-    conf = mol.GetConformer()
-    for i in range(mol.GetNumAtoms()):
-        x,y,z = docking_position.astype(np.double)[i]
-        conf.SetAtomPosition(i,Point3D(x,y,z))
-    return mol
-
 @delayed
 @wrap_non_picklable_objects
 def GetPlatformPara():
@@ -204,8 +195,8 @@ def GetPlatformPara():
         platform.setPropertyDefaultValue('Precision', 'mixed')
         logger.info(f'Set precision for platform {platform.getName()} to mixed')
     return platform
-# @delayed
-# @wrap_non_picklable_objects
+
+
 def GetPlatform():
     """Determine the best simulation platform available."""
     platform_name = os.getenv('PLATFORM')

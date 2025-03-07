@@ -8,7 +8,7 @@ import time
 import numpy as np
 from loguru import logger
 
-from minimize_utils import GetfixedPDB,GetFFGenerator,UpdatePose,GetPlatformPara
+from utils import GetfixedPDB, GetFFGenerator, UpdatePose, GetPlatformPara
 
 path_to_remove = "/opt/software/amber20/"
 sys.path = [p for p in sys.path if p not in path_to_remove]
