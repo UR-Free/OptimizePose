@@ -84,8 +84,8 @@ if __name__ == '__main__':
             if sum(new_data_list) != 0:
                 result = np.array(new_data_list)
                 indices = np.where(result == 1)
-                failed_sdfs = [files[i] for i in indices[0]]
-                logger.info(f'openff 优化未完成的样本数: {len(failed_sdfs)}')
+                failed_files = [files[i] for i in indices[0]]
+                logger.info(f'openff 优化未完成的样本数: {len(failed_files)}')
                 with Parallel(n_jobs=args.num_process) as parallel:
                     new_data_list = parallel(delayed(UpdatePose)(lig_path,system_generator_gaff,modeller,protein_atoms,args.out_dir) for lig_path in failed_sdfs)
         
